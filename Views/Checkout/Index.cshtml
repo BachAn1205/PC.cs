@@ -1,0 +1,357 @@
+﻿@* @model Address
+
+@{
+    List<Address> addresses = ViewBag.Addresses;
+}
+
+<div class="container mt-5">
+    <div class="row">
+
+        <!-- Danh sách địa chỉ có sẵn -->
+        <div class="col-md-7">
+            <h4 class="mb-3">Địa chỉ giao hàng đã lưu</h4>
+            <div class="row">
+                @foreach (var addres in addresses)
+                {
+                    <div class="col-md-6 mb-3">
+                        <div class="card shadow-sm">
+                            <div class="card-body">
+                                <h5 class="card-title">@addres.User.FullName</h5>
+                                <p class="card-subtitle mb-2 text-muted phone-muted">@addres.User.PhoneNumber</p>
+                                <p class="card-text">@addres.AddresssLine, @addres.Ward, @addres.District, @addres.City</p>
+                                <a asp-controller="Checkout" asp-action="PaymentOptions" asp-route-addressId="@addres.Id" class="btn btn-sm btn-outline-primary">Chọn địa chỉ này</a>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <!-- Thông tin người dùng + form thêm địa chỉ -->
+        <div class="col-md-5">
+            <h4 class="mb-3">Thêm địa chỉ mới</h4>
+            <form asp-action="Index">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                <div class="form-group mb-3">
+                    <label class="fw-bold">Họ và tên</label>
+                    <p class="form-control-plaintext">@ViewBag.FullName</p>
+                </div>
+                <div class="form-group mb-3">
+                    <label class="fw-bold">Email</label>
+                    <p class="form-control-plaintext">@ViewBag.Email</p>
+                </div>
+                <div class="form-group mb-3">
+                    <label class="fw-bold">Số điện thoại</label>
+                    <p class="form-control-plaintext">@ViewBag.PhoneNumber</p>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label asp-for="AddresssLine" class="form-label"></label>
+                    <input asp-for="AddresssLine" class="form-control" />
+                    <span asp-validation-for="AddresssLine" class="text-danger"></span>
+                </div>
+                <div class="form-group mb-3">
+                    <label asp-for="Ward" class="form-label"></label>
+                    <input asp-for="Ward" class="form-control" />
+                    <span asp-validation-for="Ward" class="text-danger"></span>
+                </div>
+                <div class="form-group mb-3">
+                    <label asp-for="District" class="form-label"></label>
+                    <input asp-for="District" class="form-control" />
+                    <span asp-validation-for="District" class="text-danger"></span>
+                </div>
+                <div class="form-group mb-4">
+                    <label asp-for="City" class="form-label"></label>
+                    <input asp-for="City" class="form-control" />
+                    <span asp-validation-for="City" class="text-danger"></span>
+                </div>
+
+                <button type="submit" class="btn btn-primary w-100">Thêm địa chỉ mới</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="editModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50">
+        <div class="bg-white rounded-lg w-full max-w-md mx-4">
+            <div class="p-6">
+                <h2 class="text-xl font-semibold mb-4">Chỉnh sửa địa chỉ</h2>
+                <form id="editForm" method="post">
+                    <input type="hidden" id="editAddressId" name="id">
+                    <div class="mb-4">
+                        <label class="block font-medium mb-2">Địa chỉ</label>
+                        <input type="text" id="editAddressLine" name="addressLine" class="w-full px-4 py-2 border rounded">
+                    </div>
+                    <div class="mb-4">
+                        <label class="block font-medium mb-2">Phường/Xã</label>
+                        <input type="text" id="editWard" name="ward" class="w-full px-4 py-2 border rounded">
+                    </div>
+                    <div class="mb-4">
+                        <label class="block font-medium mb-2">Quận/Huyện</label>
+                        <input type="text" id="editDistrict" name="district" class="w-full px-4 py-2 border rounded">
+                    </div>
+                    <div class="mb-6">
+                        <label class="block font-medium mb-2">Thành phố/Tỉnh</label>
+                        <input type="text" id="editCity" name="city" class="w-full px-4 py-2 border rounded">
+                    </div>
+                    <div class="flex justify-end space-x-3">
+                        <button type="button" onclick="closeEditModal()" class="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400">
+                            Hủy
+                        </button>
+                        <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+                            Lưu thay đổi
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<style>
+    .phone-muted {
+        color: #6c757d;
+        font-size: 0.9em;
+        font-weight: normal;
+    }
+
+    .form-control-plaintext {
+        padding-left: 0;
+        font-weight: 500;
+    }
+
+    .card {
+        border-radius: 12px;
+    }
+
+    .card-body {
+        padding: 1rem 1.25rem;
+    }
+
+    .btn-outline-primary {
+        border-radius: 20px;
+        padding: 0.4rem 1rem;
+    }
+
+    h4 {
+        font-weight: bold;
+    }
+</style>
+ *@
+
+@model Address
+@{
+    List<Address> addresses = ViewBag.Addresses;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý địa chỉ</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body class="bg-gray-100">
+    <div class="container mx-auto px-4 py-8">
+        <h1 class="text-2xl font-bold mb-8">Quản lý địa chỉ giao hàng</h1>
+
+        <div class="flex flex-col lg:flex-row gap-8">
+            <!-- Danh sách địa chỉ -->
+            <div class="lg:w-2/3">
+                <h2 class="text-xl font-semibold mb-4">Địa chỉ đã lưu</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    @foreach (var address in addresses)
+                    {
+                        <div class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition duration-200" data-address-id="@address.Id">
+                            <div class="flex justify-between items-start mb-2">
+                                <h3 class="text-lg font-medium">@address.User.FullName</h3>
+                                <div class="flex space-x-2">
+                                    <button onclick="openEditModal('@address.Id', '@address.AddresssLine', '@address.Ward', '@address.District', '@address.City')"
+                                            class="text-blue-500 hover:text-blue-700">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button onclick="confirmDelete('@address.Id')"
+                                            class="text-red-500 hover:text-red-700">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <p class="text-gray-500 mb-1">@address.User.PhoneNumber</p>
+                            <p class="text-gray-700 mb-4">@address.AddresssLine, @address.Ward, @address.District, @address.City</p>
+                            <a asp-controller="Checkout" asp-action="PaymentOptions" asp-route-addressId="@address.Id"
+                               class="inline-block px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition">
+                                Chọn địa chỉ này
+                            </a>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <!-- Form thêm địa chỉ mới -->
+            <div class="lg:w-1/3">
+                <h2 class="text-xl font-semibold mb-4">Thêm địa chỉ mới</h2>
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <form asp-action="Index" method="post">
+                        <div asp-validation-summary="ModelOnly" class="text-red-500 mb-4"></div>
+
+                        <div class="mb-4">
+                            <label class="block font-medium mb-2">Họ và tên</label>
+                            <p class="text-gray-700">@ViewBag.FullName</p>
+                        </div>
+                        <div class="mb-4">
+                            <label class="block font-medium mb-2">Email</label>
+                            <p class="text-gray-700">@ViewBag.Email</p>
+                        </div>
+                        <div class="mb-4">
+                            <label class="block font-medium mb-2">Số điện thoại</label>
+                            <p class="text-gray-700">@ViewBag.PhoneNumber</p>
+                        </div>
+
+                        <div class="mb-4">
+                            <label asp-for="AddresssLine" class="block font-medium mb-2"></label>
+                            <input asp-for="AddresssLine" class="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <span asp-validation-for="AddresssLine" class="text-red-500 text-sm"></span>
+                        </div>
+                        <div class="mb-4">
+                            <label asp-for="Ward" class="block font-medium mb-2"></label>
+                            <input asp-for="Ward" class="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <span asp-validation-for="Ward" class="text-red-500 text-sm"></span>
+                        </div>
+                        <div class="mb-4">
+                            <label asp-for="District" class="block font-medium mb-2"></label>
+                            <input asp-for="District" class="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <span asp-validation-for="District" class="text-red-500 text-sm"></span>
+                        </div>
+                        <div class="mb-6">
+                            <label asp-for="City" class="block font-medium mb-2"></label>
+                            <input asp-for="City" class="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <span asp-validation-for="City" class="text-red-500 text-sm"></span>
+                        </div>
+
+                        <button type="submit" class="w-full py-2 px-4 bg-green-500 text-white rounded hover:bg-green-600 transition">
+                            Thêm địa chỉ mới
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Modal -->
+    <div id="editModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50">
+        <div class="bg-white rounded-lg w-full max-w-md mx-4">
+            <div class="p-6">
+                <h2 class="text-xl font-semibold mb-4">Chỉnh sửa địa chỉ</h2>
+                <form id="editForm" method="post">
+                    <input type="hidden" id="editAddressId" name="id">
+                    <div class="mb-4">
+                        <label class="block font-medium mb-2">Địa chỉ</label>
+                        <input type="text" id="editAddressLine" name="addressLine" class="w-full px-4 py-2 border rounded">
+                    </div>
+                    <div class="mb-4">
+                        <label class="block font-medium mb-2">Phường/Xã</label>
+                        <input type="text" id="editWard" name="ward" class="w-full px-4 py-2 border rounded">
+                    </div>
+                    <div class="mb-4">
+                        <label class="block font-medium mb-2">Quận/Huyện</label>
+                        <input type="text" id="editDistrict" name="district" class="w-full px-4 py-2 border rounded">
+                    </div>
+                    <div class="mb-6">
+                        <label class="block font-medium mb-2">Thành phố/Tỉnh</label>
+                        <input type="text" id="editCity" name="city" class="w-full px-4 py-2 border rounded">
+                    </div>
+                    <div class="flex justify-end space-x-3">
+                        <button type="button" onclick="closeEditModal()" class="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400">
+                            Hủy
+                        </button>
+                        <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+                            Lưu thay đổi
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+                // Cho chức năng sửa
+        function openEditModal(id, addressLine, ward, district, city) {
+            document.getElementById('editAddressId').value = id;
+            document.getElementById('editAddressLine').value = addressLine;
+            document.getElementById('editWard').value = ward;
+            document.getElementById('editDistrict').value = district;
+            document.getElementById('editCity').value = city;
+            document.getElementById('editModal').classList.remove('hidden');
+        }
+
+        // Cho chức năng xóa
+                async function confirmDelete(id) {
+            if (!confirm('Bạn chắc chắn muốn xóa địa chỉ này?')) return;
+
+            try {
+                const response = await fetch(`/Checkout/DeleteAddressAjax?id=${id}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                    }
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    // Cập nhật UI
+                    document.querySelector(`[data-address-id="${id}"]`).remove();
+                    alert(result.message);
+                } else {
+                    alert('Lỗi: ' + result.error);
+                }
+            } catch (error) {
+                console.error('Lỗi khi xóa:', error);
+                alert('Có lỗi xảy ra khi xóa địa chỉ');
+            }
+        }
+
+        // Xử lý form sửa
+        document.getElementById('editForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const formData = {
+                Id: document.getElementById('editAddressId').value,
+                AddresssLine: document.getElementById('editAddressLine').value,
+                Ward: document.getElementById('editWard').value,
+                District: document.getElementById('editDistrict').value,
+                City: document.getElementById('editCity').value
+            };
+
+            const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
+
+            fetch('/Checkout/EditAddressAjax', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'RequestVerificationToken': token
+                },
+                body: JSON.stringify(formData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    window.location.reload();
+                } else {
+                    alert('Có lỗi khi cập nhật địa chỉ!');
+                    console.error(data.errors);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Có lỗi khi cập nhật địa chỉ!');
+            });
+        });
+    </script>
+</body>
+</html>

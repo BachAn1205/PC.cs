@@ -1,0 +1,170 @@
+﻿@using EcommercePC.Models
+@model Order
+@{
+    // Định nghĩa hàm trong Razor
+    string GetStatusClass(OrderStatus status)
+    {
+        return status switch
+        {
+            OrderStatus.OrderPlaced => "bg-secondary",
+            OrderStatus.PaymentSuccessful => "bg-warning",
+            OrderStatus.Shipped => "bg-info",
+            OrderStatus.Delivered => "bg-success",
+            _ => "bg-dark"
+        };
+    }
+}
+
+<section class="py-5">
+    <div class="container px-4 px-lg-5">
+        <div class="row gx-4 gx-lg-5  justify-content-center">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="top-status">
+                            <h5>ORDER# @Model.Id</h5>
+                        </div>
+                        <div>
+                            <h5>Address:</h5>
+                            <p>@Model.Address.AddresssLine @Model.Address.City @Model.Address.District - @Model.Address.Ward</p>
+                        </div>
+
+                        <div>
+                            <h5>Order Amount:</h5>
+                            <p>$@Model.Amount</p>
+                        </div>
+
+                        <div>
+                            <h5>Status:</h5>
+                            <p>
+                                <span class="badge @GetStatusClass(Model.Status)">
+                                    @(Model.Status == OrderStatus.PaymentSuccessful ? "Payment successful " :
+                                        Model.Status == OrderStatus.Shipped ? "Delivering" :
+                                        Model.Status == OrderStatus.Delivered ? "Delivered" :
+                                        "Order placed")
+                                </span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card mt-4"></div>
+                <div class="card-body p-0 table-responsive">
+                    <h4 class="p-3 mb-0">Product Description</h4>
+                    <table class="table mb-0">
+                        <thead>
+                            <tr>
+                                <th scope="col">Product Image</th>
+                                <th scope="col">Product Name</th>
+                                <th scope="col">Unit Price</th>
+                                <th scope="col">Quantity</th>
+                                <th scope="col">Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach(var orderProduct in Model.OrderProducts)
+                            {
+                                <tr>
+
+                                    <th>
+                                        <a asp-controller="Products" asp-action="Details" asp-route-id="@orderProduct.ProductId">
+                                            <img width="200"
+                                                 src="@orderProduct.Product.Image"
+                                                 alt="@orderProduct.Product.Name">
+                                        </a>
+                                    </th>
+                                    <td>
+                                        <a asp-controller="Products" asp-action="Details" asp-route-id="@orderProduct.ProductId">@orderProduct.Product.Name</a>
+                                    </td>
+                                    <td>@orderProduct.Price</td>
+                                    <td>@orderProduct.Qty</td>
+                                    <td><strong>$@(orderProduct.Price * orderProduct.Qty)</strong></td>
+                                </tr>
+                            }
+                          
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    
+    <div class="card mt-4">
+        <div class="card-body">
+            <h5>Your order status</h5>
+            <div class="order-action-buttons">
+                <!-- Thêm class chung -->
+                @if (Model.Status == OrderStatus.OrderPlaced)
+                {
+                    <form asp-action="MarkAsPaymentSuccessful" method="post">
+                        <input type="hidden" name="id" value="@Model.Id" />
+                        <button type="submit" class="btn btn-warning action-btn">Payment successful</button>
+                    </form>
+                }
+
+                @if (Model.Status == OrderStatus.Shipped)
+                {
+                    <form asp-action="MarkAsDelivered" method="post">
+                        <input type="hidden" name="id" value="@Model.Id" />
+                        <button type="submit" class="btn btn-success action-btn">Delivered</button>
+                    </form>
+                }
+
+                <!-- Nút Home -->
+                <a asp-controller="Home" asp-action="Index" class="btn btn-primary action-btn">
+                    <i class="fas fa-home"></i> Home
+                </a>
+            </div>
+        </div>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const deliveredForm = document.querySelector('form[action*="MarkAsDelivered"]');
+            if (deliveredForm) {
+                deliveredForm.addEventListener('submit', function() {
+                    // Tạo nút Home sau khi submit
+                    setTimeout(() => {
+                        const homeBtn = document.createElement('a');
+                        homeBtn.href = '@Url.Action("Index", "Home")';
+                        homeBtn.className = 'btn btn-primary ml-2';
+                        homeBtn.innerHTML = '<i class="fas fa-home"></i> Back to Home';
+                        deliveredForm.parentNode.appendChild(homeBtn);
+                    }, 500);
+                });
+            }
+        });
+    </script>
+
+
+</section>
+
+<style>
+    /* Đảm bảo các nút có cùng kích thước */
+    .order-action-buttons {
+        display: flex;
+        gap: 10px; /* Khoảng cách giữa các nút */
+        align-items: center;
+    }
+
+    .action-btn {
+        padding: 0.375rem 0.75rem; /* Giống padding mặc định của Bootstrap */
+        font-size: 1rem; /* Cỡ chữ thống nhất */
+        line-height: 1.5; /* Chiều cao dòng */
+        min-width: 120px; /* Độ rộng tối thiểu (tuỳ chỉnh) */
+        text-align: center; /* Căn giữa nội dung */
+    }
+
+    /* Responsive cho mobile */
+    @@media (max-width: 576px) {
+        .order-action-buttons {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .action-btn {
+            width: 100%;
+            margin-bottom: 5px;
+        }
+    }
+</style>

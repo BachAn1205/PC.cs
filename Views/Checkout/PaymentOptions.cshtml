@@ -1,0 +1,91 @@
+﻿@using Ecommerce.ViewModels
+@model PaymentOptions
+@{
+    ViewData["Title"] = "Payment Options";
+}
+
+<div class="container">
+    <div class="row mt-5 mb-5">
+        <div class="col-md-12">
+            <div class="card" style="">
+                <div class="card-body">
+                    <h5 class="card-title text-center text-primary">Order Summary</h5>
+                    <hr />
+                    <table class="order-summary table table-responsive">
+                        <tr>
+                            <th>Items:</th>
+                            <td> <span class="float-right"><span style="font-family: Arial, sans-serif;">₹</span> @ViewBag.items</span></td>
+                        </tr>
+                        <tr>
+                            <th>Tax:</th>
+                            <td><span class="float-right"><span style="font-family: Arial, sans-serif;">₹</span> @ViewBag.tax</span></td>
+                        </tr>
+                        <tr>
+                            <th>Delivery:</th>
+                            <td><span class="float-right"><span style="font-family: Arial, sans-serif;">₹</span> @ViewBag.delivery</span></td>
+                        </tr>
+                     
+                        <tr>
+                            <th>Total:</th>
+                            <td><span class="float-right"><span style="font-family: Arial, sans-serif;">₹</span> @ViewBag.subtotal</span></td>
+                        </tr>
+
+                        <tr class="mt-4">
+                            <th><h5 class="text-primary">Order Total:</h5></th>
+                            <td><h5 class="text-primary"><span class=""><span style="font-family: Arial, sans-serif;">₹</span> @ViewBag.ordertotal</span></h5></td>
+                        </tr>
+                    </table>
+
+                    <button id="confirmOrder" type="submit" class=" btn btn-primary btn-block m-auto d-block">Pay Now</button>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <script>
+        var options = {
+            "key": "@Html.DisplayFor(model => model.razorpayKey)", // Enter the Key ID generated from the Dashboard
+            "amount": "@Html.DisplayFor(model => model.amount)", // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
+            "currency": "@Html.DisplayFor(model => model.currency)",
+            "name": "@Html.DisplayFor(model => model.name)",
+            "order_id": "@Html.DisplayFor(model => model.orderId)",
+            "handler": function (response) {
+                document.getElementById('rzp_paymentid').value = response.razorpay_payment_id;
+                document.getElementById('rzp_orderid').value = response.razorpay_order_id;
+                document.getElementById('rzp-paymentresponse').click();
+            },
+            "prefill": {
+                "name": "@Html.DisplayFor(model => model.name)",
+                "email": "@Html.DisplayFor(model => model.email)",
+                "contact": "@Model.contactNumber?.Replace("+", "")"
+            },
+            "theme": {
+                "color": "#F37254"
+            }
+        };
+
+        var rzp = new Razorpay(options);
+
+        $("#confirmOrder").click(function () {
+            rzp.open();
+        })
+
+
+    </script>
+}
+
+
+@using (Html.BeginForm("Complete", "Checkout"))
+{
+    @Html.AntiForgeryToken()
+    @Html.Hidden("rzp_paymentid")
+    @Html.Hidden("rzp_orderid")
+    @Html.Hidden("addressId", Model.addressId)
+    <button type="submit" id="rzp-paymentresponse" class="btn btn-primary" hidden>Submit</button>
+}

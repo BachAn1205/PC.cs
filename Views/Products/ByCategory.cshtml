@@ -1,0 +1,12 @@
+﻿@model Category
+
+<h1>Sản phẩm thuộc danh mục: @Model.Name</h1>
+
+<div class="row">
+    @foreach (var product in Model.Products)
+    {
+        <div class="col-md-3">
+            <!-- Hiển thị thông tin sản phẩm -->
+        </div>
+    }
+</div>
