@@ -17,6 +17,8 @@ namespace Ecommerce.Data
         public DbSet<Order> Orders { get; set; }
         public DbSet<OrderProduct> OrderProducts { get; set; }
         public DbSet<Category> Categories { get; set; }
+        public DbSet<ProductSpecDetail> ProductSpecDetails { get; set; }
+        public DbSet<ProductSpecGroup> ProductSpecGroups { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -41,6 +43,11 @@ namespace Ecommerce.Data
             // Nếu OrderProduct là bảng junction (many-to-many)
             modelBuilder.Entity<OrderProduct>()
                 .HasKey(op => new { op.OrderId, op.ProductId });
+
+            modelBuilder.Entity<ProductSpecDetail>()
+                 .HasOne(p => p.SpecGroup)
+                 .WithMany(g => g.Specifications)
+                 .HasForeignKey(p => p.SpecGroupId);
         }
     }
 }

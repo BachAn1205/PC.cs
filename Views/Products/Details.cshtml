@@ -1,4 +1,6 @@
-﻿@model Product
+﻿@using Ecommerce.Models
+@using Ecommerce.ViewModels
+@using System.Linq
 
 @section PageTitle {
     <!-- Header-->
@@ -6,10 +8,17 @@
         <div class="container px-4 px-lg-5 my-5">
             <div class="text-center text-white">
                 <h1 class="display-4 fw-bolder">Product Details</h1>
-                <p class="lead fw-normal text-white-50 mb-0">@Model.Name</p>
+                <p class="lead fw-normal text-white-50 mb-0">@Model.Product.Name</p>
             </div>
         </div>
     </header>
+}
+
+@section Breadcrumb {
+    <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Trang chủ</a></li>
+    <li class="breadcrumb-item"><a asp-controller="Products" asp-action="Index">Sản phẩm</a></li>
+    <li class="breadcrumb-item"><a asp-controller="Products" asp-action="ByCategory" asp-route-categoryId="@Model.Product.CategoryId">@Model.Product.Category?.Name</a></li>
+    <li class="breadcrumb-item active">@Model.Product.Name</li>
 }
 
 <section class="py-5">
@@ -18,24 +27,141 @@
             <div class="row g-0">
                 <div class="col-md-4 border-end">
                     <div class="d-flex flex-column justify-content-center">
-                        <div class="main_image"> <img src="@Model.Image" id="main_product_image" width="350"> </div>
+                        <div class="main_image">
+                            <img src="@Model.Product.Image" id="main_product_image" width="350">
+                        </div>
                     </div>
                 </div>
                 <div class="col-md-8">
                     <div class="p-3 right-side">
-                        <h3>@Model.Name</h3>
+                        <h3>@Model.Product.Name</h3>
                         <div class="mt-2 pr-3 content">
-                            <p>
-                                @Model.Description
-                            </p>
+                            <p>@Model.Product.Description</p>
                         </div>
-                        <h3>$@Model.Price</h3>
+                        <div class="d-flex align-items-center mb-3">
+                            <span class="text-muted me-2">Brand:</span>
+                            <span class="fw-semibold">@Model.Product.Brand</span>
+                        </div>
 
-                        <div class=""> <a asp-controller="Cart" asp-action="AddToCart" asp-route-productId="@Model.Id" class="btn btn-outline-dark mt-auto">Add to Cart</a> </div>
+                        <h3>$@Model.Product.Price</h3>
 
+                        <!-- Phần Add to Cart đã sửa -->
+                        <div class="mb-4">
+                            <button class="btn btn-outline-dark mt-auto add-to-cart-btn"
+                                    onclick="addToCart(event, @Model.Product.Id)">
+                                <i class="fas fa-shopping-cart me-2"></i>Add to Cart
+                            </button>
+                            <span id="cart-notification-@Model.Product.Id" class="ms-2 text-success" style="display:none;"></span>
+                        </div>
+
+                        @if (Model.Specifications != null && Model.Specifications.Count > 0)
+                        {
+                            <div class="specifications mt-4">
+                                <h4>Thông số kĩ thuật</h4>
+                                <div class="table-responsive">
+                                    <table class="table table-bordered table-hover">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th>Thuộc tính</th>
+                                                <th>Giá trị</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var spec in Model.Specifications)
+                                            {
+                                                <tr>
+                                                    <td class="fw-semibold">@spec.Key</td>
+                                                    <td>@spec.Value</td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        }
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </section>
+
+<style>
+    .specifications {
+        margin-top: 2rem;
+        padding-top: 1rem;
+        border-top: 1px solid #eee;
+    }
+
+    .table-responsive {
+        overflow-x: auto;
+    }
+
+    .breadcrumb {
+        padding: 0.75rem 1rem;
+        background-color: #f8f9fa;
+        border-radius: 0.25rem;
+    }
+
+    .add-to-cart-btn {
+        transition: all 0.3s ease;
+    }
+
+        .add-to-cart-btn:hover {
+            background-color: #212529;
+            color: white;
+        }
+</style>
+
+@section Scripts {
+    <script>
+        function addToCart(event, productId) {
+            event.preventDefault();
+            var button = event.currentTarget;
+            var originalText = button.innerHTML;
+            var notification = document.getElementById('cart-notification-' + productId);
+
+            // Hiển thị trạng thái loading
+            button.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Adding...';
+            button.disabled = true;
+
+            $.ajax({
+                url: '@Url.Action("AddToCart", "Cart")',
+                type: 'POST',
+                data: {
+                    productId: productId,
+                    __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
+                },
+                success: function(response) {
+                    // Cập nhật số lượng trong giỏ hàng
+                    $.get('@Url.Action("GetCartCount", "Cart")', function(count) {
+                        $('#cart-badge').text(count);
+                    });
+
+                    // Hiển thị thông báo
+                    notification.textContent = 'Added to cart!';
+                    notification.style.display = 'inline';
+
+                    // Reset button sau 2 giây
+                    setTimeout(function() {
+                        button.innerHTML = originalText;
+                        button.disabled = false;
+                        notification.style.display = 'none';
+                    }, 2000);
+                },
+                error: function(xhr) {
+                    button.innerHTML = originalText;
+                    button.disabled = false;
+
+                    if (xhr.status === 401) {
+                        window.location.href = '/Account/Login';
+                    } else {
+                        notification.textContent = 'Error: ' + xhr.statusText;
+                        notification.style.display = 'inline';
+                        notification.className = 'ms-2 text-danger';
+                    }
+                }
+            });
+        }
+    </script>
+}

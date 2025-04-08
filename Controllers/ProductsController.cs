@@ -1,4 +1,5 @@
 ﻿using Ecommerce.Data;
+using Ecommerce.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
@@ -42,18 +43,25 @@ namespace Ecommerce.Controllers
             return View(category);
         }
 
-        public async Task<IActionResult> Details(int id)
+        public IActionResult Details(int id) // Đổi từ Detail sang Details
         {
-            var product = await _context.Products
-                .Include(p => p.Category) // Load thông tin Category nếu cần
-                .FirstOrDefaultAsync(p => p.Id == id);
-
+            var product = _context.Products.FirstOrDefault(p => p.Id == id);
             if (product == null)
             {
                 return NotFound();
             }
 
-            return View(product);
+            var specs = _context.ProductSpecDetails
+                               .Where(s => s.SpecGroupId == id)
+                               .ToList();
+
+            var viewModel = new ProductDetailViewModel
+            {
+                Product = product,
+                Specifications = specs
+            };
+
+            return View(viewModel);
         }
     }
 }

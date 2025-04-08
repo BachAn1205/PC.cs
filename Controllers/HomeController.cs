@@ -3,7 +3,7 @@ using Ecommerce.Models;
 using Ecommerce.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Diagnostics;
+using System.Diagnostics;   
 
 namespace Ecommerce.Controllers
 {

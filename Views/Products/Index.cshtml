@@ -17,6 +17,10 @@
         </div>
     </header>
 }
+@section Breadcrumb {
+    <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Trang chủ</a></li>
+    <li class="breadcrumb-item active">Sản phẩm</li>
+}
 
 <section class="py-5">
     <div class="container px-4 px-lg-5 mt-5">
@@ -25,7 +29,7 @@
             <div class="mb-5">
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <h2 class="fw-bolder">@category.Name</h2>
-                    <a asp-action="CategoryProducts" asp-route-id="@category.Id" class="btn btn-outline-dark">View All</a>
+                    <a asp-action="ByCategory" asp-route-categoryId="@category.Id" class="btn btn-outline-dark">View All</a>
                 </div>
 
                 <div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4">
@@ -107,3 +111,35 @@
         }
     </script>
 }
+
+@section Styles {
+    <style>
+
+        .breadcrumb {
+            padding: 0.75rem 1rem;
+            background-color: #f8f9fa;
+            border-radius: 0.25rem;
+        }
+
+        .breadcrumb-item + .breadcrumb-item::before {
+            content: "›";
+            padding: 0 0.5rem;
+            color: #6c757d;
+        }
+
+        .breadcrumb-item a {
+            color: #0d6efd;
+            text-decoration: none;
+        }
+
+        .breadcrumb-item.active {
+            color: #6c757d;
+        }
+
+        .breadcrumb-item a:hover {
+            color: #0a58ca;
+            text-decoration: underline;
+        }
+    </style>
+}   
+
