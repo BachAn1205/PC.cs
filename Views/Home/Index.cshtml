@@ -7,7 +7,7 @@
 
 @{
     
-    var fixedIds = new List<int> { 10, 12, 15, 19};
+    var fixedIds = new List<int> { 7, 109, 70, 19};
 
     var selectedProducts = Model.Products.Where(p => fixedIds.Contains(p.Id)).ToList();
 }
@@ -109,10 +109,10 @@
                         <!-- Product actions-->
                         <div class="card-footer bg-transparent border-top-0 pt-0 pb-3">
                             <div class="text-center">
-                                <button class="btn btn-dark add-to-cart-btn w-100"
+                                <button class="btn btn-outline-dark add-to-cart-btn"
                                         data-product-id="@product.Id"
                                         onclick="addToCart(event, @product.Id)">
-                                    <i class="bi bi-cart-plus me-2"></i>Add to Cart
+                                    Add to cart
                                 </button>
                             </div>
                         </div>
@@ -140,6 +140,8 @@
         </div>
     </div>
 </section>
+
+
 
 @section Styles {
     <style>
@@ -327,15 +329,160 @@
             padding-top: 4rem !important;
             padding-bottom: 4rem !important;
         }
+
+
+        .toast-notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #28a745;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 4px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 1000;
+            animation: fadeIn 0.3s;
+        }
+
+        .footer {
+            background-color: #222;
+            color: #eee;
+            padding: 40px 20px 20px;
+            font-family: Arial, sans-serif;
+        }
+
+        .footer-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            gap: 20px;
+            max-width: 1200px;
+            margin: auto;
+        }
+
+        .footer-section {
+            flex: 1;
+            min-width: 250px;
+        }
+
+            .footer-section h3,
+            .footer-section h4 {
+                color: #00bcd4;
+                margin-bottom: 10px;
+            }
+
+            .footer-section p {
+                margin: 5px 0;
+                font-size: 14px;
+            }
+
+        .social-icons img {
+            width: 28px;
+            margin-right: 10px;
+            transition: transform 0.3s ease;
+        }
+
+            .social-icons img:hover {
+                transform: scale(1.1);
+            }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 20px;
+            font-size: 13px;
+            border-top: 1px solid #444;
+            margin-top: 20px;
+        }
+
     </style>
 }
 
-@* @section Scripts { *@
-@*     <script> *@
-@*         // Initialize tooltips *@
-@*         $(function () { *@
-@*             $('[data-bs-toggle="tooltip"]').tooltip(); *@
-@*         }); *@
-@*     </script> *@
-@* } *@
+@section Scripts {
+    <script>
+         function addToCart(event, productId) {
+            event.preventDefault();
+            var button = event.target;
+            var originalText = button.innerText;
 
+            button.innerText = "Adding...";
+            button.disabled = true;
+
+            $.ajax({
+                url: '@Url.Action("AddToCart", "Cart")',
+                type: 'POST',
+                data: {
+                    productId: productId,
+                    __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
+                },
+                success: function(response) {
+                    $.get('@Url.Action("GetCartCount", "Cart")', function(count) {
+                        $('#cart-badge').text(count);
+                    });
+
+                    button.innerText = "Added!";
+                    setTimeout(function() {
+                        button.innerText = originalText;
+                        button.disabled = false;
+                    }, 2000);
+                },
+                error: function(xhr) {
+                    button.innerText = originalText;
+                    button.disabled = false;
+
+                    if (xhr.status === 401) {
+                        window.location.href = '/Account/Login';
+                    } else {
+                        alert("Error: " + xhr.statusText);
+                    }
+                }
+            });
+        }
+
+        
+    </script>
+
+    <style>
+        /* Toast notification styles */
+        .toast-notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 12px 24px;
+            border-radius: 4px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 1000;
+            animation: fadeIn 0.3s;
+            color: white;
+            display: flex;
+            align-items: center;
+        }
+
+        .toast-success {
+            background: #28a745;
+        }
+
+        .toast-error {
+            background: #dc3545;
+        }
+
+        .toast-message {
+            margin-left: 8px;
+        }
+
+       
+
+        /* Loading spinner */
+        .spinner-border {
+            display: inline-block;
+            width: 1rem;
+            height: 1rem;
+            vertical-align: text-bottom;
+            border: 0.2em solid currentColor;
+            border-right-color: transparent;
+            border-radius: 50%;
+            animation: spinner-border .75s linear infinite;
+        }
+
+        
+    </style>
+}

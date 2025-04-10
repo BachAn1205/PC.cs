@@ -177,3 +177,46 @@
 </style>
 }
 
+@section Scripts {
+    <script>
+        function addToCart(event, productId) {
+            event.preventDefault();
+            var button = event.target;
+            var originalText = button.innerText;
+
+            button.innerText = "Adding...";
+            button.disabled = true;
+
+            $.ajax({
+                url: '@Url.Action("AddToCart", "Cart")',
+                type: 'POST',
+                data: {
+                    productId: productId,
+                    __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
+                },
+                success: function(response) {
+                    $.get('@Url.Action("GetCartCount", "Cart")', function(count) {
+                        $('#cart-badge').text(count);
+                    });
+
+                    button.innerText = "Added!";
+                    setTimeout(function() {
+                        button.innerText = originalText;
+                        button.disabled = false;
+                    }, 2000);
+                },
+                error: function(xhr) {
+                    button.innerText = originalText;
+                    button.disabled = false;
+
+                    if (xhr.status === 401) {
+                        window.location.href = '/Account/Login';
+                    } else {
+                        alert("Error: " + xhr.statusText);
+                    }
+                }
+            });
+        }
+    </script>
+}
+
