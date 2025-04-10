@@ -5,101 +5,337 @@
 }
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-@section PageTitle {
-<!-- Header-->
-<header class="bg-dark py-5">
-    <div class="container px-4 px-lg-5 my-5">
-        <div class="text-center text-white">
-            <h1 class="display-4 fw-bolder">Shop in style</h1>
-            <p class="lead fw-normal text-white-50 mb-0">With this shop hompeage template</p>
-        </div>
-    </div>
-</header>
+@{
+    
+    var fixedIds = new List<int> { 10, 12, 15, 19};
 
+    var selectedProducts = Model.Products.Where(p => fixedIds.Contains(p.Id)).ToList();
+}
+@section PageTitle {
+    <!-- Hero Header -->
+    <header class="hero-header bg-gradient-primary">
+        <div class="container px-4 px-lg-5 py-6">
+            <div class="text-center text-white py-5">
+                <h1 class="display-4 fw-bold mb-3">Welcome to TechShop</h1>
+                <p class="lead mb-4">Your ultimate destination for high-quality computer components and accessories</p>
+                <div class="d-flex justify-content-center gap-3">
+                    <button asp-controller="Products" asp-action="Index" class="btn btn-light btn-lg px-4">Shop Now</button>
+                </div>
+            </div>
+        </div>
+    </header>
 }
 
-<section class="py-5">
-    <div class="container px-4 px-lg-5 mt-5">
-        <div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center">
-
-            @foreach(var product in Model.Products)
-            {
-                <div class="col mb-5">
-                    <div class="card h-100">
-                        <!-- Sale badge-->
-                        @* <div class="badge bg-dark text-white position-absolute" style="top: 0.5rem; right: 0.5rem">Sale</div> *@
-                        <!-- Product image-->
-                        <img class="card-img-top" src="@product.Image" alt="@product.Name" />
-                        <!-- Product details-->
-                        <div class="card-body p-4">
-                            <div class="text-center">
-                                <!-- Product name-->
-                                <h5 class="fw-bolder">
-                                    <a asp-controller="Products" asp-action="Details" asp-route-id="@product.Id">
-                                        @product.Name
-                                    </a>
-                                    </h5>
-                                <!-- Product price-->
-                                @* <span class="text-muted text-decoration-line-through">$@product.Price</span> *@
-                                $@product.Price
-                            </div>
+<!-- Why Choose TechShop Section -->
+<section class="py-5 bg-light">
+    <div class="container px-4 px-lg-5">
+        <h2 class="fw-bolder text-center mb-5">Why Choose TechShop?</h2>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm hover-shadow transition-all">
+                    <div class="card-body text-center p-4">
+                        <div class="feature-icon bg-primary bg-gradient text-white rounded-circle mb-3">
+                            <i class="bi bi-award fs-1"></i>
                         </div>
-                        <!-- Product actions-->
-                        <div class="text-center">
-                            <a asp-controller="Cart" asp-action="AddToCart"
-                               asp-route-productId="@product.Id"
-                               class="btn btn-outline-dark mt-auto add-to-cart-btn"
-                               data-product-id="@product.Id">
-                                Add to cart
-                            </a>
-                        </div>  
+                        <h5 class="fw-bolder">Chất lượng hàng đầu</h5>
+                        <p class="mb-0">Chúng tôi chỉ cung cấp các sản phẩm chính hãng từ nhà sản xuất uy tín.</p>
                     </div>
                 </div>
-            }
-
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm hover-shadow transition-all">
+                    <div class="card-body text-center p-4">
+                        <div class="feature-icon bg-primary bg-gradient text-white rounded-circle mb-3">
+                            <i class="bi bi-headset fs-1"></i>
+                        </div>
+                        <h5 class="fw-bolder">Hỗ trợ tận tình</h5>
+                        <p class="mb-0">Đội ngũ kỹ thuật viên tư vấn chuyên nghiệp đáp ứng mọi yêu cầu.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm hover-shadow transition-all">
+                    <div class="card-body text-center p-4">
+                        <div class="feature-icon bg-primary bg-gradient text-white rounded-circle mb-3">
+                            <i class="bi bi-cash-stack fs-1"></i>
+                        </div>
+                        <h5 class="fw-bolder">Giá cả cạnh tranh</h5>
+                        <p class="mb-0">Giá cả hợp lý và chương trình khuyến mãi hấp dẫn với nhiều ưu đãi.</p>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </section>
 
-@section Scripts {
-    <script>
-        $(document).ready(function() {
-            $('.add-to-cart-btn').click(function(e) {
-                e.preventDefault();
-                var btn = $(this);
-                var originalText = btn.text();
-                var productId = btn.data('product-id');
+<!-- Featured Products Section -->
+<section class="py-5" id="featured-products">
+    <div class="container px-4 px-lg-5">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="fw-bolder">Featured Products</h2>
+            <a asp-controller="Products" asp-action="Index" class="btn btn-outline-dark">View All</a>
+        </div>
+        <div class="row g-4">
+            @foreach (var product in selectedProducts)
+            {
+                <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                    <div class="product-card card h-100 border-0 shadow-sm">
+                        <!-- Product image-->
+                        <div class="product-image-container position-relative overflow-hidden">
+                            <img class="card-img-top product-image" src="@product.Image" alt="@product.Name" />
+                            <div class="product-actions">
+                                <a asp-controller="Products" asp-action="Details" asp-route-id="@product.Id"
+                                   class="btn btn-light rounded-circle action-btn" data-bs-toggle="tooltip" title="Quick View">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                                <button class="btn btn-light rounded-circle action-btn" data-bs-toggle="tooltip" title="Add to Wishlist">
+                                    <i class="bi bi-heart"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <!-- Product details-->
+                        <div class="card-body p-3">
+                            <div class="text-center">
+                                <!-- Product name-->
+                                <h5 class="product-title fw-semibold mb-2">
+                                    <a asp-controller="Products" asp-action="Details" asp-route-id="@product.Id" class="text-decoration-none text-dark">@product.Name</a>
+                                </h5>
+                                <!-- Product price-->
+                                <div class="product-price fw-bold text-primary">
+                                    $@product.Price.ToString("N2")
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Product actions-->
+                        <div class="card-footer bg-transparent border-top-0 pt-0 pb-3">
+                            <div class="text-center">
+                                <button class="btn btn-dark add-to-cart-btn w-100"
+                                        data-product-id="@product.Id"
+                                        onclick="addToCart(event, @product.Id)">
+                                    <i class="bi bi-cart-plus me-2"></i>Add to Cart
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</section>
 
-                // Thêm hiệu ứng loading
-                btn.html('<span class="spinner-border spinner-border-sm" role="status"></span>');
-                btn.prop('disabled', true);
+<!-- Call to Action Section -->
+<section class="py-5 bg-gradient-primary text-white">
+    <div class="container px-4 px-lg-5">
+        <div class="row g-4 align-items-center">
+            <div class="col-lg-8">
+                <h2 class="fw-bold mb-3">Subscribe to Our Newsletter</h2>
+                <p class="lead mb-0">Get the latest updates, news, and special offers delivered directly to your inbox.</p>
+            </div>
+            <div class="col-lg-4">
+                <form class="d-flex">
+                    <input type="email" class="form-control me-2" placeholder="Your email address">
+                    <button type="submit" class="btn btn-light px-4">Subscribe</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
 
-                $.post(btn.attr('href'), function() {
-                    // Cập nhật giao diện
-                    btn.html('Added!');
-                    btn.removeClass('btn-outline-dark').addClass('btn-success');
+@section Styles {
+    <style>
+        /* Hero Header */
+        .hero-header {
+            background-image:url('/img/Banner/AdobeStock_583955641-scaled-e1681216412803.jpeg') !important;
+            background-size: cover;
+            background-position: center !important;
+            background-repeat: no-repeat !important;
+            min-height: 500px; /* Tuỳ chỉnh */
+            margin-bottom: 2rem;
+            position: relative;
+            overflow: hidden;
+            color: #333;
+        }
 
-                    // Gọi API để lấy số lượng mới
-                    $.get('@Url.Action("GetCartCount", "Cart")', function(count) {
-                        $('#cart-badge').text(count);
-                    });
+            .hero-header::before {
+                content: "";
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none"><path fill="rgba(255,255,255,0.05)" d="M0,0 L100,0 L100,100 L0,100 Z" /></svg>');
+                background-size: cover;
+            }
 
-                    // Reset nút sau 2 giây
-                    setTimeout(function() {
-                        btn.html(originalText);
-                        btn.removeClass('btn-success').addClass('btn-outline-dark');
-                        btn.prop('disabled', false);
-                    }, 2000);
-                }).fail(function() {
-                    // Xử lý lỗi
-                    btn.html('Error!');
-                    setTimeout(function() {
-                        btn.html(originalText);
-                        btn.removeClass('btn-danger').addClass('btn-outline-dark');
-                        btn.prop('disabled', false);
-                    }, 2000);
-                });
-            });
-        });
-    </script>
+        .display-4 {
+            font-size: 3.5rem;
+            letter-spacing: -0.5px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 1rem;
+        }
+
+        /* Product Card */
+        .product-card {
+            transition: all 0.3s ease;
+            border-radius: 0.5rem;
+            overflow: hidden;
+        }
+
+            .product-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1) !important;
+            }
+
+        .product-image-container {
+            height: 200px;
+            background-color: #f8f9fa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .product-image {
+            max-height: 100%;
+            width: auto;
+            object-fit: contain;
+            transition: transform 0.3s ease;
+        }
+
+        .product-card:hover .product-image {
+            transform: scale(1.05);
+        }
+
+        .product-actions {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            opacity: 0;
+            transition: all 0.3s ease;
+            display: flex;
+            gap: 0.5rem;
+            z-index: 3;
+        }
+
+        .product-card:hover .product-actions {
+            opacity: 1;
+        }
+
+        .action-btn {
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+            .action-btn:hover {
+                background-color: #4ca1af !important;
+                color: white !important;
+            }
+
+        .product-title {
+            font-size: 1rem;
+            transition: color 0.3s ease;
+        }
+
+            .product-title a:hover {
+                color: #4ca1af !important;
+            }
+
+        .product-price {
+            font-size: 1.1rem;
+        }
+
+        /* Add to Cart Button */
+        .add-to-cart-btn {
+            transition: all 0.3s ease;
+            border-radius: 0.25rem;
+            font-weight: 500;
+        }
+
+            .add-to-cart-btn:hover {
+                background-color: #2c3e50 !important;
+                color: white !important;
+            }
+
+        /* Feature Icons */
+        .feature-icon {
+            width: 60px;
+            height: 60px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Shared styles */
+        .bg-gradient-primary {
+            background: linear-gradient(135deg, #2c3e50 0%, #4ca1af 100%);
+        }
+
+        .text-primary {
+            color: #4ca1af !important;
+        }
+
+        .fw-bolder {
+            font-size: 1.8rem;
+            color: #2c3e50;
+            position: relative;
+            display: inline-block;
+        }
+
+        .d-flex.justify-content-between h2.fw-bolder::after {
+            content: "";
+            position: absolute;
+            bottom: -10px;
+            left: 0;
+            width: 50px;
+            height: 3px;
+            background: #4ca1af;
+        }
+
+        .btn-outline-dark {
+            border-color: #2c3e50;
+            color: #2c3e50;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border-radius: 50px;
+            padding: 0.5rem 1.5rem;
+        }
+
+            .btn-outline-dark:hover {
+                background-color: #2c3e50;
+                color: white;
+                transform: translateY(-2px);
+                box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            }
+
+        .hover-shadow {
+            transition: all 0.3s ease !important;
+        }
+
+            .hover-shadow:hover {
+                box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1) !important;
+            }
+
+        .transition-all {
+            transition: all 0.3s ease !important;
+        }
+
+        .py-6 {
+            padding-top: 4rem !important;
+            padding-bottom: 4rem !important;
+        }
+    </style>
 }
+
+@* @section Scripts { *@
+@*     <script> *@
+@*         // Initialize tooltips *@
+@*         $(function () { *@
+@*             $('[data-bs-toggle="tooltip"]').tooltip(); *@
+@*         }); *@
+@*     </script> *@
+@* } *@
+
