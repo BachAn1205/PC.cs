@@ -12,7 +12,119 @@
     <!-- Core theme CSS (includes Bootstrap)-->
     <link href="css/styles.css" rel="stylesheet" />
     @await RenderSectionAsync("Styles", required: false)
+    <style>
+        .footer {
+            background-color: #2c3e50;
+            color: #ecf0f1;
+            padding: 3rem 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
 
+        .footer-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+
+        .footer-logo {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .tech-text {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #fff;
+            letter-spacing: 1px;
+        }
+
+        .social-icons {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .social-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #34495e;
+            color: #ecf0f1;
+            transition: all 0.3s ease;
+        }
+
+            .social-icon:hover {
+                background-color: #3498db;
+                transform: translateY(-3px);
+            }
+
+            .social-icon svg {
+                width: 20px;
+                height: 20px;
+            }
+
+        .footer-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: #3498db;
+            position: relative;
+            padding-bottom: 0.5rem;
+        }
+
+            .footer-title::after {
+                content: '';
+                position: absolute;
+                left: 0;
+                bottom: 0;
+                width: 50px;
+                height: 2px;
+                background-color: #3498db;
+            }
+
+        .footer-links {
+            list-style: none;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+        }
+
+            .footer-links li a {
+                color: #bdc3c7;
+                text-decoration: none;
+                transition: color 0.3s ease;
+                display: inline-block;
+                padding: 0.2rem 0;
+            }
+
+                .footer-links li a:hover {
+                    color: #3498db;
+                    transform: translateX(5px);
+                }
+
+        .footer-contact-item {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            margin-bottom: 1rem;
+            color: #bdc3c7;
+            line-height: 1.5;
+        }
+
+            .footer-contact-item i {
+                font-size: 1.2rem;
+                color: #3498db;
+            }
+
+
+    </style>
 </head>
 <body>
   

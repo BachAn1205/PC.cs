@@ -22,18 +22,32 @@ namespace Ecommerce.ViewComponents
         public async Task<IViewComponentResult> InvokeAsync()
         {
             var currentUser = await _userManager.GetUserAsync(HttpContext.User);
-            if (currentUser == null) {
-                var model1 = new NavigationViewModel
+            if (currentUser == null)
+            {
+                return View("Index", new NavigationViewModel
                 {
-                };
-                return View("Index", model1);
+                    Cart = new CartViewModel { Items = new List<CartItemViewModel>() }
+                });
             }
 
-            var cart = await _context.Carts.Where(x => x.UserId == currentUser.Id).ToListAsync();
+            var cart = await _context.Carts
+                .Include(c => c.Product)
+                .Where(x => x.UserId == currentUser.Id)
+                .ToListAsync();
+
+            var cartItems = cart.Select(x => new CartItemViewModel
+            {
+                ProductName = x.Product.Name,
+                ProductImage = x.Product.Image, // Đảm bảo cột ImageUrl có tồn tại
+                Quantity = x.Qty
+            }).ToList();
 
             var model = new NavigationViewModel
             {
-                Cart = cart
+                Cart = new CartViewModel
+                {
+                    Items = cartItems
+                }
             };
 
             return View("Index", model);

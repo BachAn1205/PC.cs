@@ -4,6 +4,7 @@ using Ecommerce.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,7 +20,10 @@ builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.R
 builder.Services.AddControllersWithViews()
     .AddRazorRuntimeCompilation();
 
-builder.Services.AddSingleton<IRazorPayConfiguration>(builder.Configuration.GetSection("RazorPayConfiguration").Get<RazorPayConfiguration>());
+builder.Services.Configure<RazorPayConfiguration>(
+    builder.Configuration.GetSection("RazorPayConfiguration"));
+builder.Services.AddSingleton<IRazorPayConfiguration>(sp =>
+    sp.GetRequiredService<IOptions<RazorPayConfiguration>>().Value);
 
 var app = builder.Build();
 

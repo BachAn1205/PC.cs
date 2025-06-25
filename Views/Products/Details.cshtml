@@ -85,8 +85,36 @@
         </div>
     </div>
 </section>
+<section class="py-5 bg-light">
+    <div class="container">
+        <h3 class="mb-4">Sản phẩm liên quan</h3>
+        <div class="row">
+            @foreach (var item in Model.RelatedProducts)
+            {
+                <div class="col-md-3 mb-4">
+                    <div class="card h-100">
+                        <img src="@item.Image" class="card-img-top" alt="@item.Name" style="height: 200px; object-fit: contain;">
+                        <div class="card-body d-flex flex-column">
+                            <h5 class="card-title">@item.Name</h5>
+                            <p class="card-text text-muted">$@item.Price</p>
+                            <a asp-controller="Products" asp-action="Details" asp-route-id="@item.Id" class="btn btn-outline-primary mt-auto">
+                                Xem chi tiết
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</section>
+
 
 <style>
+    .card:hover {
+        transform: scale(1.02);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    }
+
     .specifications {
         margin-top: 2rem;
         padding-top: 1rem;

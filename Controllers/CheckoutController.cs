@@ -40,6 +40,21 @@ namespace Ecommerce.Controllers
             ViewBag.Email = currentuser.Email ?? "Chưa cập nhật email";
             ViewBag.PhoneNumber = currentuser.PhoneNumber ?? "Chưa cập nhật SĐT";
 
+            var cart = await _context.Carts
+                .Include(x => x.Product)
+                .Where(x => x.UserId == currentuser.Id)
+                .ToListAsync();
+
+            double totalCost = 0;
+
+            foreach (var cartItem in cart)
+            {
+                totalCost += cartItem.Product.Price * cartItem.Qty;
+            }
+
+            ViewBag.TotalCost = totalCost;
+
+            
             return View();
         }
 
@@ -174,6 +189,11 @@ namespace Ecommerce.Controllers
 
         public async Task<IActionResult> PaymentOptions(int addressId)
         {
+            if (_razorPay == null || string.IsNullOrEmpty(_razorPay.KeyID) || string.IsNullOrEmpty(_razorPay.KeySecret))
+            {
+                throw new Exception("RazorPay configuration is missing or invalid.");
+            }
+
             var address = await _context.Addresses.Where(x => x.Id == addressId).FirstOrDefaultAsync();
             if (address == null)
             {
@@ -238,62 +258,55 @@ namespace Ecommerce.Controllers
             if (user != null)
             {
                 var carts = await _context.Carts
-                    .Include(x =>x.Product)
+                    .Include(x => x.Product)
                     .Where(x => x.UserId == user.Id).ToListAsync();
-               
 
-                // This id is razorpay unique payment id which can be use to get the payment details from razorpay server
                 string paymentId = rzp_paymentid;
-
-                // This is orderId
                 string orderId = rzp_orderid;
 
                 Razorpay.Api.RazorpayClient client = new Razorpay.Api.RazorpayClient(_razorPay.KeyID, _razorPay.KeySecret);
-
                 Razorpay.Api.Payment payment = client.Payment.Fetch(paymentId);
 
-                // This code is for capture the payment 
                 Dictionary<string, object> options = new Dictionary<string, object>();
                 options.Add("amount", payment.Attributes["amount"]);
                 Razorpay.Api.Payment paymentCaptured = payment.Capture(options);
                 string amt = paymentCaptured.Attributes["amount"];
                 var amount = double.Parse(amt);
+
                 var order = new Models.Order
                 {
                     AddressId = addressId,
                     CreatedAt = DateTime.Now,
-                 
                     UserId = user.Id,
-                    Amount = amount/100,
+                    Amount = amount / 100,
                 };
 
                 _context.Orders.Add(order);
-
                 await _context.SaveChangesAsync();
 
+                // Tạo danh sách OrderProducts
+                var orderProducts = new List<OrderProduct>();
                 foreach (var cart in carts)
                 {
-                    var orderProduct = new OrderProduct
+                    orderProducts.Add(new OrderProduct
                     {
                         ProductId = cart.ProductId,
                         OrderId = order.Id,
                         Price = cart.Product.Price,
                         Qty = cart.Qty,
-                    };
-                    _context.Add(orderProduct);
+                    });
                 }
 
+                // Thêm tất cả OrderProducts cùng lúc
+                await _context.OrderProducts.AddRangeAsync(orderProducts);
                 await _context.SaveChangesAsync();
 
-                _context.RemoveRange(carts);
+                // Xóa giỏ hàng
+                _context.Carts.RemoveRange(carts);
                 await _context.SaveChangesAsync();
             }
 
-           
-
-
-            return RedirectToAction("ThankYou");
-
+              return RedirectToAction("ThankYou");
         }
 
         public IActionResult ThankYou()

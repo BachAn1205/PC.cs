@@ -1,0 +1,31 @@
+﻿@model Ecommerce.ViewModels.CartViewModel
+
+
+<ul class="dropdown-menu dropdown-menu-end shadow-sm p-3" aria-labelledby="cartDropdown" style="min-width: 300px;">
+    @if (Model?.Items != null && Model.Items.Any())
+    {
+        @foreach (var item in Model.Items.Take(5))
+        {
+            <li class="d-flex align-items-center mb-2">
+                <img src="@item.ProductImage" alt="@item.ProductName" width="40" class="me-2 rounded" />
+                <div>
+                    <div class="fw-semibold">@item.ProductName</div>
+                    <div class="text-muted small">Qty: @item.Quantity</div>
+                </div>
+            </li>
+        }
+
+        if (Model.Items.Count > 5)
+        {
+            <li class="text-muted small mt-2">And @(Model.Items.Count - 5) more items...</li>
+        }
+
+        <li class="mt-2 text-end">
+            <a asp-controller="Cart" asp-action="Index" class="btn btn-primary btn-sm">View Cart</a>
+        </li>
+    }
+    else
+    {
+        <li class="text-muted">Your cart is empty.</li>
+    }
+</ul>

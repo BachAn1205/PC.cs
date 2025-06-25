@@ -22,32 +22,45 @@ namespace Ecommerce.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            base.OnModelCreating(modelBuilder); // Important for Identity configurations
+            base.OnModelCreating(modelBuilder);
 
-            // Cấu hình quan hệ Product - Category (1-n)
+            // Cấu hình Product - Category
             modelBuilder.Entity<Product>()
                 .HasOne(p => p.Category)
                 .WithMany(c => c.Products)
                 .HasForeignKey(p => p.CategoryId)
-                .OnDelete(DeleteBehavior.Restrict); // Hoặc Cascade tùy yêu cầu
+                .OnDelete(DeleteBehavior.Restrict);
 
-            // Cấu hình quan hệ Order - OrderProduct (1-n)
-            modelBuilder.Entity<Order>()
-                .HasMany(o => o.OrderProducts)
-                .WithOne(op => op.Order)
-                .HasForeignKey(op => op.OrderId);
+            // Cấu hình OrderProduct
+            modelBuilder.Entity<OrderProduct>(entity =>
+            {
+                // Khóa chính tự tăng
+                entity.HasKey(op => op.Id);
+                entity.Property(op => op.Id)
+                    .UseIdentityColumn();
 
-            // Cấu hình quan hệ Product - OrderProduct (1-n)
-          
+                // Quan hệ với Order
+                entity.HasOne(op => op.Order)
+                    .WithMany(o => o.OrderProducts)
+                    .HasForeignKey(op => op.OrderId)
+                    .OnDelete(DeleteBehavior.Cascade);
 
-            // Nếu OrderProduct là bảng junction (many-to-many)
-            modelBuilder.Entity<OrderProduct>()
-                .HasKey(op => new { op.OrderId, op.ProductId });
+                // Quan hệ với Product
+                entity.HasOne(op => op.Product)
+                    .WithMany(p => p.OrderProducts)
+                    .HasForeignKey(op => op.ProductId)
+                    .OnDelete(DeleteBehavior.Restrict);
 
+                // Ràng buộc duy nhất cho cặp OrderId-ProductId
+                entity.HasIndex(op => new { op.OrderId, op.ProductId })
+                    .IsUnique();
+            });
+
+            // Cấu hình Product Specification
             modelBuilder.Entity<ProductSpecDetail>()
-                 .HasOne(p => p.SpecGroup)
-                 .WithMany(g => g.Specifications)
-                 .HasForeignKey(p => p.SpecGroupId);
+                .HasOne(p => p.SpecGroup)
+                .WithMany(g => g.Specifications)
+                .HasForeignKey(p => p.SpecGroupId);
         }
     }
 }

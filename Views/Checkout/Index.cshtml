@@ -1,145 +1,4 @@
-﻿@* @model Address
-
-@{
-    List<Address> addresses = ViewBag.Addresses;
-}
-
-<div class="container mt-5">
-    <div class="row">
-
-        <!-- Danh sách địa chỉ có sẵn -->
-        <div class="col-md-7">
-            <h4 class="mb-3">Địa chỉ giao hàng đã lưu</h4>
-            <div class="row">
-                @foreach (var addres in addresses)
-                {
-                    <div class="col-md-6 mb-3">
-                        <div class="card shadow-sm">
-                            <div class="card-body">
-                                <h5 class="card-title">@addres.User.FullName</h5>
-                                <p class="card-subtitle mb-2 text-muted phone-muted">@addres.User.PhoneNumber</p>
-                                <p class="card-text">@addres.AddresssLine, @addres.Ward, @addres.District, @addres.City</p>
-                                <a asp-controller="Checkout" asp-action="PaymentOptions" asp-route-addressId="@addres.Id" class="btn btn-sm btn-outline-primary">Chọn địa chỉ này</a>
-                            </div>
-                        </div>
-                    </div>
-                }
-            </div>
-        </div>
-
-        <!-- Thông tin người dùng + form thêm địa chỉ -->
-        <div class="col-md-5">
-            <h4 class="mb-3">Thêm địa chỉ mới</h4>
-            <form asp-action="Index">
-                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-
-                <div class="form-group mb-3">
-                    <label class="fw-bold">Họ và tên</label>
-                    <p class="form-control-plaintext">@ViewBag.FullName</p>
-                </div>
-                <div class="form-group mb-3">
-                    <label class="fw-bold">Email</label>
-                    <p class="form-control-plaintext">@ViewBag.Email</p>
-                </div>
-                <div class="form-group mb-3">
-                    <label class="fw-bold">Số điện thoại</label>
-                    <p class="form-control-plaintext">@ViewBag.PhoneNumber</p>
-                </div>
-
-                <div class="form-group mb-3">
-                    <label asp-for="AddresssLine" class="form-label"></label>
-                    <input asp-for="AddresssLine" class="form-control" />
-                    <span asp-validation-for="AddresssLine" class="text-danger"></span>
-                </div>
-                <div class="form-group mb-3">
-                    <label asp-for="Ward" class="form-label"></label>
-                    <input asp-for="Ward" class="form-control" />
-                    <span asp-validation-for="Ward" class="text-danger"></span>
-                </div>
-                <div class="form-group mb-3">
-                    <label asp-for="District" class="form-label"></label>
-                    <input asp-for="District" class="form-control" />
-                    <span asp-validation-for="District" class="text-danger"></span>
-                </div>
-                <div class="form-group mb-4">
-                    <label asp-for="City" class="form-label"></label>
-                    <input asp-for="City" class="form-control" />
-                    <span asp-validation-for="City" class="text-danger"></span>
-                </div>
-
-                <button type="submit" class="btn btn-primary w-100">Thêm địa chỉ mới</button>
-            </form>
-        </div>
-    </div>
-
-    <div id="editModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50">
-        <div class="bg-white rounded-lg w-full max-w-md mx-4">
-            <div class="p-6">
-                <h2 class="text-xl font-semibold mb-4">Chỉnh sửa địa chỉ</h2>
-                <form id="editForm" method="post">
-                    <input type="hidden" id="editAddressId" name="id">
-                    <div class="mb-4">
-                        <label class="block font-medium mb-2">Địa chỉ</label>
-                        <input type="text" id="editAddressLine" name="addressLine" class="w-full px-4 py-2 border rounded">
-                    </div>
-                    <div class="mb-4">
-                        <label class="block font-medium mb-2">Phường/Xã</label>
-                        <input type="text" id="editWard" name="ward" class="w-full px-4 py-2 border rounded">
-                    </div>
-                    <div class="mb-4">
-                        <label class="block font-medium mb-2">Quận/Huyện</label>
-                        <input type="text" id="editDistrict" name="district" class="w-full px-4 py-2 border rounded">
-                    </div>
-                    <div class="mb-6">
-                        <label class="block font-medium mb-2">Thành phố/Tỉnh</label>
-                        <input type="text" id="editCity" name="city" class="w-full px-4 py-2 border rounded">
-                    </div>
-                    <div class="flex justify-end space-x-3">
-                        <button type="button" onclick="closeEditModal()" class="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400">
-                            Hủy
-                        </button>
-                        <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
-                            Lưu thay đổi
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
-
-
-
-<style>
-    .phone-muted {
-        color: #6c757d;
-        font-size: 0.9em;
-        font-weight: normal;
-    }
-
-    .form-control-plaintext {
-        padding-left: 0;
-        font-weight: 500;
-    }
-
-    .card {
-        border-radius: 12px;
-    }
-
-    .card-body {
-        padding: 1rem 1.25rem;
-    }
-
-    .btn-outline-primary {
-        border-radius: 20px;
-        padding: 0.4rem 1rem;
-    }
-
-    h4 {
-        font-weight: bold;
-    }
-</style>
- *@
+﻿@* 
 
 @model Address
 @{
@@ -354,4 +213,90 @@
         });
     </script>
 </body>
-</html>
+</html> *@
+
+<div class="container mx-auto px-4 py-8 space-y-8">
+    <!-- Địa chỉ giao hàng -->
+    <section class="bg-white p-6 rounded shadow">
+        <h2 class="text-xl font-semibold mb-4">Địa chỉ giao hàng</h2>
+        <div class="flex justify-between items-start">
+            <div>
+                <p class="font-semibold">@Model.DefaultAddress.User.FullName</p>
+                <p>@Model.DefaultAddress.AddresssLine, @Model.DefaultAddress.Ward, @Model.DefaultAddress.District, @Model.DefaultAddress.City</p>
+                <p class="text-gray-600 text-sm">@Model.DefaultAddress.User.PhoneNumber</p>
+            </div>
+            <button onclick="document.getElementById('address-manager').classList.toggle('hidden')" class="text-blue-500 hover:underline">Thay đổi</button>
+        </div>
+    </section>
+
+    <!-- Quản lý địa chỉ -->
+    <section id="address-manager" class="hidden">
+        <!-- Dán lại nguyên phần quản lý địa chỉ bạn đã có ở trên -->
+    </section>
+
+    <!-- Giỏ hàng -->
+    <section class="bg-white p-6 rounded shadow">
+        <h2 class="text-xl font-semibold mb-4">Sản phẩm trong giỏ hàng</h2>
+        <table class="w-full text-left">
+            <thead class="border-b font-medium">
+                <tr>
+                    <th>Ảnh</th>
+                    <th>Tên</th>
+                    <th>Giá</th>
+                    <th>Số lượng</th>
+                    <th>Tạm tính</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.Cart.Items)
+                {
+                    <tr class="border-b">
+                        <td><img src="@item.ProductImage" alt="@item.ProductName" class="w-16 h-16 rounded" /></td>
+                        <td>@item.ProductName</td>
+                        <td>@String.Format("{0:N0}₫", item.Price)</td>
+                        <td>
+                            <form asp-action="UpdateQty" asp-controller="Cart" method="post">
+                                <input type="hidden" name="productId" value="@item.ProductId" />
+                                <input type="number" name="qty" value="@item.Quantity" min="1" class="w-16 border rounded px-2" />
+                                <button type="submit" class="text-blue-500 text-sm ml-2">Cập nhật</button>
+                            </form>
+                        </td>
+                        <td>@String.Format("{0:N0}₫", item.Price * item.Quantity)</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        <div class="d-flex justify-content-between mb-4" style="font-weight: 500;">
+            <p class="mb-2">Total</p>
+            <p class="mb-2">$@ViewBag.TotalCost</p>
+        </div>
+    </section>
+
+    <!-- Thanh toán -->
+    <section class="bg-white p-6 rounded shadow">
+        <h2 class="text-xl font-semibold mb-4">Phương thức thanh toán</h2>
+        <form asp-action="PlaceOrder" method="post">
+            <input type="hidden" name="AddressId" value="@Model.DefaultAddress.Id" />
+
+            <div class="space-y-2 mb-6">
+                <label class="flex items-center">
+                    <input type="radio" name="PaymentMethod" value="Momo" checked class="mr-2" />
+                    Ví Momo
+                </label>
+                <label class="flex items-center">
+                    <input type="radio" name="PaymentMethod" value="ZaloPay" class="mr-2" />
+                    ZaloPay
+                </label>
+                <label class="flex items-center">
+                    <input type="radio" name="PaymentMethod" value="COD" class="mr-2" />
+                    Thanh toán khi nhận hàng (COD)
+                </label>
+            </div>
+
+            <button type="submit" class="w-full py-2 px-4 bg-green-500 text-white rounded hover:bg-green-600">
+                Đặt hàng
+            </button>
+        </form>
+    </section>
+</div>

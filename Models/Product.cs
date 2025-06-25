@@ -24,5 +24,6 @@ namespace Ecommerce.Models
         public int? CategoryId { get; set; }
 
         public Category Category { get; set; }
+        public ICollection<OrderProduct> OrderProducts { get; set; }
     }
 }
